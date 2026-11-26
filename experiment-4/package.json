@@ -1,0 +1,12 @@
+{
+  "name": "dineplan-experiment-4",
+  "version": "4.0.0",
+  "description": "DinePlan Experiment 4 - Express.js Customer Update Counter + Exact Exp 3 Console",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

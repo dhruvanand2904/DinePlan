@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DinePlan · Experiment 4 (Express.js Update Counter &amp; Delta Console)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">DP</span>
+      <span>
+        <b>TableBloom · Guest Insights</b>
+        <small>Guest Insights · Update Activity Monitor</small>
+      </span>
+    </a>
+    <div class="top-actions">
+      <span class="status-pill"><i></i> Express.js Linked to ../experiment-2/submissions.json</span>
+      <a class="btn btn-light" href="http://localhost:3002" target="_blank">← Exp 2</a>
+      <a class="btn btn-light" href="http://localhost:3003" target="_blank">← Exp 3</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">GUEST INSIGHTS · ACTIVITY &amp; UPDATE ANALYTICS</span>
+        <h1>Guest activity.<br><em>Every change counted.</em></h1>
+        <p>Powered by <b>Express.js</b> and linked directly to Experiment 2's <code>submissions.json</code>, Experiment 4 includes everything from Experiment 3 plus live <b>Customer Update Frequency Tracking</b> showing exactly how many times each customer has updated their reservation.</p>
+        <div class="hero-tags">
+          <span>● Express.js REST API</span>
+          <span>↻ Customer Update Counter</span>
+          <span>✎ Edit, Delete &amp; Schema Alter</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div>
+          <span class="eyebrow" style="color:#7dd3fc;">EXPRESS.JS LOGIC</span>
+          <h3>Update Counter + Delta Feed</h3>
+          <p>Every <code>PUT /api/records/:id</code> or <code>POST /api/alter</code> tracked in <code>exp3-feed.json</code> increments that customer's live update count in Express.js.</p>
+        </div>
+        <div style="font-size:12px; color:#e8d8c5; border-top:1px solid rgba(255,255,255,0.18); padding-top:14px;">
+          Port: <b>3004</b> &nbsp;|&nbsp; Source: <code>../experiment-2/submissions.json</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="metrics">
+      <article class="metric">
+        <div class="metric-icon">↻</div>
+        <div>
+          <small>Total Customer Updates</small>
+          <strong id="kpiTotalUpdates">0</strong>
+          <span>Tracked by Express.js</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">★</div>
+        <div>
+          <small>Most Updated Customer</small>
+          <strong id="kpiTopCustomer" style="font-size:20px;">None yet</strong>
+          <span id="kpiTopCount">0 updates</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">✎</div>
+        <div>
+          <small>Edited / Altered Persons</small>
+          <strong id="kpiEdited">0</strong>
+          <span>Filtered from submissions.json</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">⌘</div>
+        <div>
+          <small>JSON Schema Attributes</small>
+          <strong id="kpiAttrs">0</strong>
+          <span>Columns in submissions.json</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- NEW FEATURE IN EXP 4: How many times each customer is updating -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">EXPRESS.JS UPDATE FREQUENCY TRACKER</span>
+          <h2>Customer Update Count Leaderboard</h2>
+          <p>Live count of how many times each customer's reservation has been updated or altered across Experiment 2, 3, and 4.</p>
+        </div>
+      </div>
+      <div id="updateCountGrid" class="count-grid"></div>
+    </section>
+
+    <!-- Alter & Edit Workspace (Same as Exp 3) -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">SCHEMA ALTERATION &amp; RECORD EDITOR</span>
+          <h2>Alter JSON Attributes or Edit Reservation</h2>
+          <p>Add brand-new JSON attributes to <code>submissions.json</code> or modify any existing field of a selected person.</p>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <form id="editForm" class="panel">
+          <div class="panel-head">
+            <div>
+              <h3 id="editTitle">Select a Person to Edit</h3>
+              <p id="editSub">Click "Edit" on any edited person row below (or pick any booking from the dropdown).</p>
+            </div>
+            <select id="recordSelector" style="width:240px;"></select>
+          </div>
+
+          <div id="dynamicFields" class="form-grid"></div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">✓ Save Changes to submissions.json</button>
+            <button class="btn btn-danger" type="button" id="deleteBtn">✕ Delete This Person</button>
+          </div>
+        </form>
+
+        <aside class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Alter <code>submissions.json</code> Attributes</h3>
+              <p>Dynamically append new key-value attributes to Experiment 2's JSON file.</p>
+            </div>
+          </div>
+
+          <div style="display:grid; gap:13px;">
+            <label>New Attribute Key Name *
+              <input id="alterKey" placeholder="e.g. valetTag, dessertChoice, vipTier">
+            </label>
+            <label>Attribute Value *
+              <input id="alterValue" placeholder="e.g. Gold VIP, Tiramisu, V-104">
+            </label>
+            <label>Apply Alteration Scope
+              <select id="alterScope">
+                <option value="single">Selected Person Only</option>
+                <option value="all">All Records in submissions.json (Schema Alter)</option>
+              </select>
+            </label>
+            <button class="btn btn-primary full" type="button" id="alterBtn">＋ Alter JSON &amp; Add Attribute</button>
+          </div>
+
+          <div style="margin-top:16px; padding:12px; border-radius:12px; background:var(--surface-alt); font-size:12px; color:var(--muted); line-height:1.55;">
+            <b>Express.js Counter Note:</b> Saving an edit or altering an attribute automatically increments that customer's update count above.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Field-by-Field Change Log Cards (Same as Exp 3) -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">FIELD-LEVEL DIFF LOG</span>
+          <h2>Recent Edits, Alterations &amp; Deletions</h2>
+          <p>Exact before-and-after diffs recorded whenever a person's record is modified.</p>
+        </div>
+      </div>
+      <div id="changeCards" class="change-grid"></div>
+    </section>
+
+    
+    <!-- Bottom Table: Full Dataset + Update Count Column -->
+    <section class="table-section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">SUBMISSIONS.JSON · COMPLETE DATASET &amp; UPDATE COUNTS</span>
+          <h2>All Dining Reservations with Update Counts</h2>
+          <p>Displays all dining records from <code>submissions.json</code> along with each customer's exact <b>Update Count</b>.</p>
+        </div>
+        <div class="table-controls">
+          <input id="searchInput" class="search-input" placeholder="Search name, zone, course...">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <span><b>DinePlan Experiment 4 (Express.js)</b> · Reads &amp; Alters <code>../experiment-2/submissions.json</code></span>
+      <span id="syncStatus">Ready</span>
+    </footer>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
