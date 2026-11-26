@@ -1,0 +1,9 @@
+{
+  "name": "dineplan-experiment-3",
+  "version": "4.0.0",
+  "description": "DinePlan Experiment 3 - Edited Persons Monitor, Edit, Delete & Schema Alter",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

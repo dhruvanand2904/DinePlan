@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DinePlan · Experiment 3 (Edited Records, Alter &amp; Delete)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">DP</span>
+      <span>
+        <b>TableBloom · Change Studio</b>
+        <small>Reservation Changes · Edit &amp; Schema Studio</small>
+      </span>
+    </a>
+    <div class="top-actions">
+      <span class="status-pill"><i></i> Linked to ../experiment-2/submissions.json</span>
+      <a class="btn btn-light" href="http://localhost:3002" target="_blank">← Exp 2</a>
+      <a class="btn btn-primary" href="http://localhost:3004" target="_blank">Exp 4 (Update Counter) ↗</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">CHANGE STUDIO · RECORDS &amp; CUSTOM FIELDS</span>
+        <h1>Keep the details.<br><em>Make them better.</em></h1>
+        <p>Experiment 3 reads directly from Experiment 2's <code>submissions.json</code> and displays <b>only the persons whose records were edited, altered, or deleted</b>, while letting you edit values, delete records, or alter JSON attributes live.</p>
+        <div class="hero-tags">
+          <span>● Zero Duplicate JSON (Linked to Exp 2)</span>
+          <span>✎ Edit &amp; Delete Records</span>
+          <span>⌘ Alter Schema (Add New Attributes)</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div>
+          <span class="eyebrow" style="color:#7dd3fc;">CROSS-EXPERIMENT LINK</span>
+          <h3>Live Delta Filtering</h3>
+          <p>Unmodified records in Experiment 2 stay hidden here until edited. Use <b>Alter Attributes</b> below to inject new columns straight into Experiment 2's <code>submissions.json</code>.</p>
+        </div>
+        <div style="font-size:12px; color:#e8d8c5; border-top:1px solid rgba(255,255,255,0.18); padding-top:14px;">
+          Port: <b>3003</b> &nbsp;|&nbsp; Source: <code>../experiment-2/submissions.json</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="metrics">
+      <article class="metric">
+        <div class="metric-icon">✎</div>
+        <div>
+          <small>Edited / Altered Persons</small>
+          <strong id="kpiEdited">0</strong>
+          <span>Filtered from submissions.json</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">⚡</div>
+        <div>
+          <small>Total Change Events</small>
+          <strong id="kpiEvents">0</strong>
+          <span>Updates, alters &amp; deletions</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">⌘</div>
+        <div>
+          <small>JSON Schema Attributes</small>
+          <strong id="kpiAttrs">0</strong>
+          <span>Columns in submissions.json</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">▤</div>
+        <div>
+          <small>Total Exp 2 Records</small>
+          <strong id="kpiTotalExp2">0</strong>
+          <span>Linked source count</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">SCHEMA ALTERATION &amp; RECORD EDITOR</span>
+          <h2>Alter JSON Attributes or Edit Reservation</h2>
+          <p>Add brand-new JSON attributes to <code>submissions.json</code> or modify any existing field of a selected person.</p>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <form id="editForm" class="panel">
+          <div class="panel-head">
+            <div>
+              <h3 id="editTitle">Select a Person to Edit</h3>
+              <p id="editSub">Click "Edit" on any edited person row below (or pick any booking from the dropdown).</p>
+            </div>
+            <select id="recordSelector" style="width:240px;"></select>
+          </div>
+
+          <div id="dynamicFields" class="form-grid"></div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">✓ Save Changes to submissions.json</button>
+            <button class="btn btn-danger" type="button" id="deleteBtn">✕ Delete This Person</button>
+          </div>
+        </form>
+
+        <aside class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Alter <code>submissions.json</code> Attributes</h3>
+              <p>Dynamically append new key-value attributes to Experiment 2's JSON file.</p>
+            </div>
+          </div>
+
+          <div style="display:grid; gap:13px;">
+            <label>New Attribute Key Name *
+              <input id="alterKey" placeholder="e.g. valetTag, dessertChoice, vipTier">
+            </label>
+            <label>Attribute Value *
+              <input id="alterValue" placeholder="e.g. Gold VIP, Tiramisu, V-104">
+            </label>
+            <label>Apply Alteration Scope
+              <select id="alterScope">
+                <option value="single">Selected Person Only</option>
+                <option value="all">All Records in submissions.json (Schema Alter)</option>
+              </select>
+            </label>
+            <button class="btn btn-primary full" type="button" id="alterBtn">＋ Alter JSON &amp; Add Attribute</button>
+          </div>
+
+          <div style="margin-top:16px; padding:12px; border-radius:12px; background:var(--surface-alt); font-size:12px; color:var(--muted); line-height:1.55;">
+            <b>How Alter works:</b> Adding an attribute modifies <code>../experiment-2/submissions.json</code> directly and immediately adds that column across the project.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">FIELD-LEVEL DIFF LOG</span>
+          <h2>Recent Edits, Alterations &amp; Deletions</h2>
+          <p>Exact before-and-after diffs recorded whenever a person's record is modified.</p>
+        </div>
+      </div>
+      <div id="changeCards" class="change-grid"></div>
+    </section>
+
+    <section class="table-section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">FILTERED VIEW · EDITED PERSONS ONLY</span>
+          <h2>Edited Persons in <code>submissions.json</code></h2>
+          <p>Displays <b>only</b> the persons who have been edited, altered, or deleted. Use <b>Edit</b> or <b>Delete</b> directly on any row.</p>
+        </div>
+        <div class="table-controls">
+          <input id="searchInput" class="search-input" placeholder="Search edited persons...">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <span><b>DinePlan Experiment 3</b> · Reads &amp; Alters <code>../experiment-2/submissions.json</code></span>
+      <span id="syncStatus">Ready</span>
+    </footer>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
