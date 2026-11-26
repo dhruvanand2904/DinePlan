@@ -1,0 +1,9 @@
+{
+  "name": "dineplan-experiment-2",
+  "version": "4.0.0",
+  "description": "DinePlan Experiment 2 - Dining Data Entry, Edit & Blueprint Floorplan",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

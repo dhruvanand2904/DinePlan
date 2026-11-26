@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DinePlan · Experiment 2 (Data Entry &amp; Blueprint)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">DP</span>
+      <span>
+        <b>TableBloom Reservations</b>
+        <small>Reservation Atelier · Live Booking Workspace</small>
+      </span>
+    </a>
+    <div class="top-actions">
+      <span class="status-pill"><i></i> submissions.json Active</span>
+      <a class="btn btn-light" href="http://localhost:3003" target="_blank">Open Exp 3 ↗</a>
+      <a class="btn btn-primary" href="http://localhost:3004" target="_blank">Open Exp 4 (Express Update Counter) ↗</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">TABLEBLOOM · RESERVATIONS &amp; FLOOR PLANNING</span>
+        <h1>Plan the evening.<br><em>Shape the space.</em></h1>
+        <p>Manage all restaurant dining reservations, menu courses, zones, and spatial floor dimensions in <code>submissions.json</code>. Whenever you edit an existing person here, their updated data streams into Experiment 3 and increments their Express.js update counter in Experiment 4.</p>
+        <div class="hero-tags">
+          <span>● Owns submissions.json (10 Sample Records)</span>
+          <span>✎ Enter &amp; Edit Reservations</span>
+          <span>⬡ Live Architectural Blueprint</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div>
+          <span class="eyebrow" style="color:#fcd34d;">ARCHITECTURE LINK</span>
+          <h3>Single Source of Truth</h3>
+          <p><code>submissions.json</code> exists exclusively inside Experiment 2. Experiment 3 and Experiment 4 read from this folder and track edited records and customer update frequencies.</p>
+        </div>
+        <div style="font-size:12px; color:#e8d8c5; border-top:1px solid rgba(255,255,255,0.18); padding-top:14px;">
+          Port: <b>3002</b> &nbsp;|&nbsp; Linked Feed: <code>exp3-feed.json</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="metrics">
+      <article class="metric">
+        <div class="metric-icon">▤</div>
+        <div>
+          <small>Total Reservations</small>
+          <strong id="kpiRecords">0</strong>
+          <span>Stored in submissions.json</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">⬡</div>
+        <div>
+          <small>Active Dining Tables</small>
+          <strong id="kpiTables">0</strong>
+          <span>Across all zones</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">⑁</div>
+        <div>
+          <small>Total Chair Capacity</small>
+          <strong id="kpiChairs">0</strong>
+          <span>Tables × Seats/Table</span>
+        </div>
+      </article>
+      <article class="metric">
+        <div class="metric-icon">♙</div>
+        <div>
+          <small>Expected Diners</small>
+          <strong id="kpiGuests">0</strong>
+          <span>Total guest headcount</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">RESERVATION &amp; SPATIAL STUDIO</span>
+          <h2>Enter or Edit Dining Reservation</h2>
+          <p>Fill out restaurant dining attributes on the left and inspect the real-time architectural table &amp; chair blueprint on the right.</p>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <form id="bookingForm" class="panel">
+          <div class="panel-head">
+            <div>
+              <h3 id="formHeading">New Dining Reservation</h3>
+              <p id="formSub">Enter customer &amp; dining details to append to submissions.json.</p>
+            </div>
+            <span id="editingBadge" class="pill-status ok">Mode: Create</span>
+          </div>
+
+          <input type="hidden" id="reqId">
+
+          <div class="form-grid">
+            <label>Customer Name *
+              <input id="customerName" placeholder="e.g. Aarav Sharma" required>
+            </label>
+            <label>Phone Number *
+              <input id="phone" placeholder="+91-9876543210" required>
+            </label>
+            <label>Email Address
+              <input id="email" type="email" placeholder="guest@example.com">
+            </label>
+
+            <label>Event / Occasion *
+              <input id="eventType" placeholder="Birthday, Anniversary, Corporate" required>
+            </label>
+            <label>Dining Zone *
+              <select id="diningZone">
+                <option>Window Panoramic</option>
+                <option>Main Atrium</option>
+                <option>Private VIP Lounge</option>
+                <option>Rooftop Terrace</option>
+                <option>Garden Courtyard</option>
+              </select>
+            </label>
+            <label>Meal Course Package
+              <select id="mealCourse">
+                <option>3-Course Executive</option>
+                <option>4-Course Festive</option>
+                <option>5-Course Tasting</option>
+                <option>7-Course Chef Special</option>
+                <option>Buffet Royal</option>
+                <option>High Tea &amp; Brunch</option>
+              </select>
+            </label>
+
+            <label>Dietary Preference
+              <select id="dietaryPreference">
+                <option>Vegetarian</option>
+                <option>Non-Vegetarian</option>
+                <option>Jain &amp; Veg</option>
+                <option>Vegan Options</option>
+                <option>Gluten-Free</option>
+                <option>Pescatarian</option>
+                <option>Mixed</option>
+              </select>
+            </label>
+            <label>Beverage Package
+              <select id="beveragePackage">
+                <option>Mocktail Pairing</option>
+                <option>Fresh Juices</option>
+                <option>Sommelier Reserve</option>
+                <option>Craft Cocktails</option>
+                <option>Artisan Coffee &amp; Tea</option>
+                <option>Open Bar Premium</option>
+              </select>
+            </label>
+            <label>Assigned Steward / Server
+              <input id="assignedServer" placeholder="e.g. Rohan K." value="Rohan K.">
+            </label>
+
+            <label>Reservation Date *
+              <input id="eventDate" type="date" required>
+            </label>
+            <label>Reservation Time *
+              <input id="eventTime" type="time" value="19:30" required>
+            </label>
+            <label>Booking Status
+              <select id="status">
+                <option>Confirmed</option>
+                <option>Pending</option>
+                <option>Waitlisted</option>
+              </select>
+            </label>
+
+            <label>Total Guests *
+              <input id="guests" type="number" min="1" max="200" value="18" required>
+            </label>
+            <label>Number of Tables *
+              <input id="tableCount" type="number" min="1" max="20" value="3" required>
+            </label>
+            <label>Seats per Table *
+              <input id="seatsPerTable" type="number" min="2" max="14" value="6" required>
+            </label>
+
+            <label>Table Geometry
+              <select id="tableShape">
+                <option>Circle</option>
+                <option>Rectangle</option>
+                <option>Square</option>
+              </select>
+            </label>
+            <label>Primary Orientation
+              <select id="tableDirection">
+                <option>North</option>
+                <option>East</option>
+                <option>South</option>
+                <option>West</option>
+              </select>
+            </label>
+            <label>Floor Area (Width × Height ft)
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <input id="roomWidth" type="number" min="12" max="100" value="32" title="Room Width (ft)">
+                <input id="roomHeight" type="number" min="12" max="100" value="24" title="Room Height (ft)">
+              </div>
+            </label>
+
+            <label class="span-full">Special Setup Notes
+              <input id="notes" placeholder="e.g. Cake table near north window, high chairs, floral centerpiece">
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" id="submitBtn">＋ Save New Reservation</button>
+            <button class="btn btn-light" type="button" id="resetBtn">Reset Form</button>
+          </div>
+        </form>
+
+        <aside class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Sample Dining Blueprint Layout</h3>
+              <p>Live CAD-style floorplan rendering tables, chairs, aisles &amp; zone area.</p>
+            </div>
+          </div>
+
+          <div class="blueprint-box">
+            <div class="blueprint-header">
+              <strong id="bpTitle">FLOORPLAN · WINDOW PANORAMIC</strong>
+              <span id="bpAreaLabel">32 ft × 24 ft (768 sq.ft)</span>
+            </div>
+
+            <svg id="blueprintSvg" class="bp-svg" viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg"></svg>
+
+            <div class="bp-chips">
+              <div class="bp-chip">
+                <span>Tables</span>
+                <strong id="bpTables">3 × Circle</strong>
+              </div>
+              <div class="bp-chip">
+                <span>Chairs</span>
+                <strong id="bpChairs">18 Seats</strong>
+              </div>
+              <div class="bp-chip">
+                <span>Guests</span>
+                <strong id="bpGuests">18 Guests</strong>
+              </div>
+              <div class="bp-chip">
+                <span>Sq.Ft / Guest</span>
+                <strong id="bpDensity">42.7 sq.ft</strong>
+              </div>
+            </div>
+
+            <div class="bp-legend">
+              <span><i style="background:#38bdf8;"></i>Dining Table</span>
+              <span><i style="background:#f59e0b;"></i>Chair Seat</span>
+              <span><i style="background:#34d399;"></i>Main Entrance</span>
+              <span><i style="background:#a78bfa;"></i>Service Station</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="table-section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">SUBMISSIONS.JSON · COMPLETE DATASET</span>
+          <h2>All Restaurant Dining Reservations</h2>
+          <p>Click <b>Edit</b> on any row to load that person into the form above and update their record.</p>
+        </div>
+        <div class="table-controls">
+          <input id="searchBox" class="search-input" placeholder="Search name, zone, course, ID...">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <span><b>DinePlan Experiment 2</b> · Owns <code>submissions.json</code></span>
+      <span id="syncLabel">Ready</span>
+    </footer>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
